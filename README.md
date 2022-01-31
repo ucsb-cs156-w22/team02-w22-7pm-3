@@ -1,6 +1,6 @@
 # starter-team02: dsre-v2
 
-# Code Coverage
+# Code Coverage (Main Branch)
 [![codecov](https://codecov.io/gh/ucsb-cs156-w22/team02-w22-7pm-3/branch/main/graph/badge.svg?token=cVlhGEfYJm)](https://codecov.io/gh/ucsb-cs156-w22/team02-w22-7pm-3)
 
 Storybook is here:
