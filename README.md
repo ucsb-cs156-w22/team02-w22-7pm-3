@@ -1,6 +1,5 @@
 # starter-team02: dsre-v2
 
-# Code Coverage (Main Branch)
 # Heroku Links
 * Production: <https://w22-7pm-3-team02.herokuapp.com/>
 * QA:   <https://w22-7pm-3-team02-qa.herokuapp.com/>
@@ -9,6 +8,7 @@
 
 [![codecov](https://codecov.io/gh/ucsb-cs156-w22/team02-w22-7pm-3/branch/main/graph/badge.svg?token=cVlhGEfYJm)](https://codecov.io/gh/ucsb-cs156-w22/team02-w22-7pm-3)
 
+# Storybook
 Storybook is here:
 * Production: <https://ucsb-cs156-w22.github.io/team02-w22-7pm-3-docs/>
 * QA:  <https://ucsb-cs156-w22.github.io/team02-w22-7pm-3docs-qa/>
