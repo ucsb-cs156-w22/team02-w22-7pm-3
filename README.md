@@ -1,8 +1,11 @@
 # starter-team02: dsre-v2
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Code Coverage (Main Branch)
 =======
+=======
+>>>>>>> refs/remotes/origin/readme-heroku-links
 # Heroku Links
 * Production: <https://w22-7pm-3-team02.herokuapp.com/>
 * QA:   <https://w22-7pm-3-team02-qa.herokuapp.com/>
