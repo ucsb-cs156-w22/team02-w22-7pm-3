@@ -1,6 +1,6 @@
 # starter-team02: dsre-v2
 
-# Markdown Style Badge for Code Coverage
+# Code Coverage
 [![codecov](https://codecov.io/gh/ucsb-cs156-w22/team02-w22-7pm-3/branch/main/graph/badge.svg?token=cVlhGEfYJm)](https://codecov.io/gh/ucsb-cs156-w22/team02-w22-7pm-3)
 
 Storybook is here:
