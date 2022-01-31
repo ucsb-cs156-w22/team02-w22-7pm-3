@@ -11,7 +11,7 @@
 # Storybook
 Storybook is here:
 * Production: <https://ucsb-cs156-w22.github.io/team02-w22-7pm-3-docs/>
-* QA:  <https://ucsb-cs156-w22.github.io/team02-w22-7pm-3docs-qa/>
+* QA:  <https://ucsb-cs156-w22.github.io/team02-w22-7pm-3-docs-qa/>
 
 The GitHub actions script to deploy the Storybook to QA requires some configuration; see [docs/github-actions.md](docs/github-actions.md) for details.
 
