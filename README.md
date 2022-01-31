@@ -1,6 +1,14 @@
 # starter-team02: dsre-v2
 
+<<<<<<< HEAD
 # Code Coverage (Main Branch)
+=======
+# Heroku Links
+* Production: <https://w22-7pm-3-team02.herokuapp.com/>
+* QA:   <https://w22-7pm-3-team02-qa.herokuapp.com/>
+
+# Code Coverage
+>>>>>>> 033f0ba (TH - finished production and qa heroku dashboards, put links in README)
 [![codecov](https://codecov.io/gh/ucsb-cs156-w22/team02-w22-7pm-3/branch/main/graph/badge.svg?token=cVlhGEfYJm)](https://codecov.io/gh/ucsb-cs156-w22/team02-w22-7pm-3)
 
 Storybook is here:
