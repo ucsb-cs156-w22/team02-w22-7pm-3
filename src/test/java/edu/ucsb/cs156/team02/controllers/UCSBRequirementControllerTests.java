@@ -40,12 +40,17 @@ public class UCSBRequirementControllerTests extends ControllerTestCase {
     UserRepository userRepository;
 
     @Test
+    public void api_UCSBRequirements_get__all__returns_403() throws Exception {
+        mockMvc.perform(get("/api/UCSBRequirements/all"))
+                .andExpect(status().is(403));
+    }
+
+    @WithMockUser(roles = { "USER" })
+    @Test
     public void api_UCSBRequirements_get__all__returns_200() throws Exception {
         mockMvc.perform(get("/api/UCSBRequirements/all"))
                 .andExpect(status().is(200));
     }
-
-
 
     // @Test
     // public void api_todos_post__user_logged_in() throws Exception {

@@ -40,7 +40,8 @@ public class UCSBRequirementController extends ApiController {
     @Autowired
     ObjectMapper mapper;
 
-    @ApiOperation(value = "List all UCSBRequirement (if it belongs to current user)")  //@PreAuthorize("hasRole('ADMIN')")
+    @ApiOperation(value = "List all UCSBRequirement (if it belongs to current user)")  
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/all")
     public Iterable<UCSBRequirement> getUCSBRequirements() {
         loggingService.logMethod();
@@ -49,7 +50,8 @@ public class UCSBRequirementController extends ApiController {
     }
 
 
-    @ApiOperation(value = "Create a new UCSBRequirement") // @PreAuthorize("hasRole('ROLE_USER')")
+    @ApiOperation(value = "Create a new UCSBRequirement") 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/post")
     public UCSBRequirement postUcsbRequirement(
             // @ApiParam("id") @RequestParam Long id,
