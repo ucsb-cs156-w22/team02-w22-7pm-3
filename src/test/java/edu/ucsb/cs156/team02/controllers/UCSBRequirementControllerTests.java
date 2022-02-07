@@ -49,7 +49,7 @@ public class UCSBRequirementControllerTests extends ControllerTestCase {
 
     @WithMockUser(roles = { "USER" })
     @Test
-    public void api_UCSBRequirements_get__all__returns_403_user_logged_in() throws Exception {
+    public void api_UCSBRequirements_get__all__returns_200_user_logged_in() throws Exception {
         mockMvc.perform(get("/api/UCSBRequirements/all"))
                 .andExpect(status().isOk());
     }
