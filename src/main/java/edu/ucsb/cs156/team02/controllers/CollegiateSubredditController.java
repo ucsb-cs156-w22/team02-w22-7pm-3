@@ -1,8 +1,9 @@
 package edu.ucsb.cs156.team02.controllers;
 
-import edu.ucsb.cs156.team02.entities.Todo;
+import edu.ucsb.cs156.team02.entities.CollegiateSubreddit;
 import edu.ucsb.cs156.team02.entities.User;
 import edu.ucsb.cs156.team02.models.CurrentUser;
+import edu.ucsb.cs156.team02.repositories.CollegiateSubredditRepository;
 import edu.ucsb.cs156.team02.repositories.TodoRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,8 +35,16 @@ import java.util.Optional;
 @Slf4j
 public class CollegiateSubredditController extends ApiController{
     
+    @Autowired
+    CollegiateSubredditRepository collegiateSubredditRepository;
+
     @ApiOperation(value = "list all collegiate subreddits")
-    @GetMapping("/get")
-    public 
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("/all")
+    public Iterable<CollegiateSubreddit> allCollegiateSubReddits() {
+        loggingService.logMethod();
+        Iterable<CollegiateSubreddit> subreddits = collegiateSubredditRepository.findAll();
+        return subreddits;
+    }
 
 }
