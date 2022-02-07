@@ -39,6 +39,8 @@ public class UCSBRequirementControllerTests extends ControllerTestCase {
     @MockBean
     UserRepository userRepository;
 
+
+    //authorization tests
     @Test
     public void api_UCSBRequirements_get__all__returns_403_logged_out() throws Exception {
         mockMvc.perform(get("/api/UCSBRequirements/all"))
@@ -58,6 +60,37 @@ public class UCSBRequirementControllerTests extends ControllerTestCase {
     //     mockMvc.perform(get("/api/UCSBRequirements/all"))
     //             .andExpect(status().isOk());
     // }
+
+
+    @WithMockUser(roles = { "USER" })
+    @Test
+    public void api_UCSBRequirement_all__user_logged_in__returns_UCSBRequirements_for_user() throws Exception {
+
+        // arrange
+
+        // User thisUser = currentUserService.getCurrentUser().getUser();
+
+        // Todo todo1 = Todo.builder().title("Todo 1").details("Todo 1").done(false).user(thisUser).id(1L).build();
+        // Todo todo2 = Todo.builder().title("Todo 2").details("Todo 2").done(false).user(thisUser).id(2L).build();
+        UCSBRequirement ucsbrequirement1 = UCSBRequirement.builder().requirementCode("Test requirementCode").requirementTranslation("Test requirementTranslation").collegeCode("Test collegeCode").objCode("Test objCode").courseCount(1).units(1).inactive(true).id(0L).build();
+        UCSBRequirement ucsbrequirement2 = UCSBRequirement.builder().requirementCode("Test requirementCode").requirementTranslation("Test requirementTranslation").collegeCode("Test collegeCode").objCode("Test objCode").courseCount(1).units(1).inactive(true).id(0L).build();
+
+
+        ArrayList<UCSBRequirement> expectedUCSBRequirements = new ArrayList<>();
+        expectedUCSBRequirements.addAll(Arrays.asList(ucsbrequirement1, ucsbrequirement2));
+        when(UcsbRequirementRepository.findAll()).thenReturn(expectedUCSBRequirements);      //findByUserId(thisUser.getId())).thenReturn(expectedTodos);
+
+        // act
+        MvcResult response = mockMvc.perform(get("/api/UCSBRequirements/all"))
+                .andExpect(status().isOk()).andReturn();
+
+        // assert
+
+        verify(UcsbRequirementRepository, times(1)).findAll();         //findByUserId(eq(thisUser.getId()));
+        String expectedJson = mapper.writeValueAsString(expectedUCSBRequirements);
+        String responseString = response.getResponse().getContentAsString();
+        assertEquals(expectedJson, responseString);
+    }
 
 
     @WithMockUser(roles = { "USER" })
