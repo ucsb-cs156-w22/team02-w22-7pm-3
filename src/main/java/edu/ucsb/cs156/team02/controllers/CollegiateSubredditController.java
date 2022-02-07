@@ -47,7 +47,7 @@ public class CollegiateSubredditController extends ApiController{
     @Autowired
     ObjectMapper mapper;
 
-    @ApiOperation(value = "list all collegiate subreddits")
+    @ApiOperation(value = "List all collegiate subreddits.")
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/all")
     public Iterable<CollegiateSubreddit> allCollegiateSubReddits() {
@@ -56,13 +56,13 @@ public class CollegiateSubredditController extends ApiController{
         return subreddits;
     }
 
-    @ApiOperation(value = "Create a new CollegiateSubreddit")
+    @ApiOperation(value = "Create a new CollegiateSubreddit.")
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/post")
     public CollegiateSubreddit postCollegiateSubreddit(
-            @ApiParam("name") @RequestParam String name,
-            @ApiParam("location") @RequestParam String location,
-            @ApiParam("subreddit") @RequestParam String subreddit) {
+            @ApiParam("Enter name:") @RequestParam String name,
+            @ApiParam("Enter location:") @RequestParam String location,
+            @ApiParam("Enter subreddit:") @RequestParam String subreddit) {
         loggingService.logMethod();
         CurrentUser currentUser = getCurrentUser();
         log.info("currentUser={}", currentUser);
