@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface UCSBRequirementRepository extends CrudRepository<UCSBRequirement, Long> {
-    // Iterable<UCSBRequirement> findAll();
+    // Iterable<UCSBRequirement> findAllByUserId(Long user_id);
 }

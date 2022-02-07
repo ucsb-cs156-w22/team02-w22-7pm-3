@@ -40,20 +40,30 @@ public class UCSBRequirementController extends ApiController {
     @Autowired
     ObjectMapper mapper;
 
-    @ApiOperation(value = "List all UCSBRequirement (if it belongs to current user)")  
+    // @ApiOperation(value = "List all UCSBRequirement")  
+    // @PreAuthorize("hasRole('ROLE_ADMIN')")
+    // @GetMapping("/admin/all")
+    // public Iterable<UCSBRequirement> allUsersUCSBRequirements() {
+    //     loggingService.logMethod();
+    //     Iterable<UCSBRequirement> UCSBRequirement = ucsbRequirementRepository.findAll();
+    //     return UCSBRequirement;
+    // }
+
+    @ApiOperation(value = "List all UCSBRequirement")  
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/all")
-    public Iterable<UCSBRequirement> getUCSBRequirements() {
+    public Iterable<UCSBRequirement> thisUsersUCSBRequirements() {
         loggingService.logMethod();
+        // CurrentUser currentUser = getCurrentUser();
+        // Iterable<UCSBRequirement> UCSBRequirement = ucsbRequirementRepository.findAllByUserId(currentUser.getUser().getId());
         Iterable<UCSBRequirement> UCSBRequirement = ucsbRequirementRepository.findAll();
         return UCSBRequirement;
     }
 
-
     @ApiOperation(value = "Create a new UCSBRequirement") 
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/post")
-    public UCSBRequirement postUcsbRequirement(
+    public UCSBRequirement postUCSBRequirement(
             // @ApiParam("id") @RequestParam Long id,
             @ApiParam("GE Letter") @RequestParam String requirementCode,
             @ApiParam("Subject Type") @RequestParam String requirementTranslation,
