@@ -54,7 +54,7 @@ public class UCSBSubjectController extends ApiController {
             @ApiParam("Subject Code") @RequestParam String subjectCode,
             @ApiParam("Subject Translation") @RequestParam String subjectTranslation,
             @ApiParam("Department Code") @RequestParam String deptCode,
-            @ApiParam("College Code: Only 'ENGR' or 'L&S' or 'UCSB'") @RequestParam String CollegeCode,
+            @ApiParam("College Code: Only 'ENGR' or 'L&S' or 'UCSB'") @RequestParam String collegeCode,
             @ApiParam("Related Department Code") @RequestParam String relatedDeptCode,
             @ApiParam("Inactive") @RequestParam Boolean inactive) {
         loggingService.logMethod();
@@ -65,7 +65,7 @@ public class UCSBSubjectController extends ApiController {
         subject.setSubjectCode(subjectCode);
         subject.setSubjectTranslation(subjectTranslation);
         subject.setDeptCode(deptCode);
-        subject.setCollegeCode(CollegeCode);
+        subject.setCollegeCode(collegeCode);
         subject.setRelatedDeptCode(relatedDeptCode);
         subject.setInactive(inactive);
         UCSBSubject savedSubject = ucsbSubjectRepository.save(subject);
