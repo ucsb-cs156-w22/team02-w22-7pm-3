@@ -33,6 +33,16 @@ import java.util.Optional;
 @Slf4j
 public class UCSBRequirementController extends ApiController {
 
+
+    public class UCSBRequirementOrError {
+        Long id;
+        UCSBRequirement ucsbRequirement;
+        ResponseEntity<String> error;
+
+        public UCSBRequirementOrError(Long id) {
+            this.id = id;
+        }
+    }
     
     @Autowired
     private UCSBRequirementRepository ucsbRequirementRepository;
@@ -88,8 +98,80 @@ public class UCSBRequirementController extends ApiController {
         ucsbRequirement.setInactive(inactive);
         UCSBRequirement savedUcsbRequirement = ucsbRequirementRepository.save(ucsbRequirement);
         return savedUcsbRequirement;
+    }
 
-        
+
+    @ApiOperation(value = "Delete a UCSBRequirement")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @DeleteMapping("")
+    public ResponseEntity<String> deleteUCSBRequirement(
+            @ApiParam("id") @RequestParam Long id) {
+        loggingService.logMethod();
+
+        UCSBRequirementOrError toe = new UCSBRequirementOrError(id);
+
+        toe = doesUCSBRequirementExist(toe);
+        if (toe.error != null) {
+            return toe.error;
+        }
+
+        ucsbRequirementRepository.deleteById(id);
+
+        return ResponseEntity.ok().body(String.format("record %d deleted", id));
+
+    }
+
+    /**
+     * Pre-conditions: toe.id is value to look up, toe.UCSBRequirement and toe.error are null
+     * 
+     * Post-condition: if UCSBRequirement with id toe.id exists, toe.UCSBRequirement now refers to it, and
+     * error is null.
+     * Otherwise, UCSBRequirement with id toe.id does not exist, and error is a suitable return
+     * value to
+     * report this error condition.
+     */
+    public UCSBRequirementOrError doesUCSBRequirementExist(UCSBRequirementOrError toe) {
+
+        Optional<UCSBRequirement> optionalUCSBRequirement = ucsbRequirementRepository.findById(toe.id);
+
+        if (optionalUCSBRequirement.isEmpty()) {
+            toe.error = ResponseEntity
+                    .badRequest()
+                    .body(String.format("record %d not found", toe.id));
+        } else {
+            toe.ucsbRequirement = optionalUCSBRequirement.get();
+        }
+        return toe;
+    }
+
+    /**
+     * Pre-conditions: toe.UCSBRequirement is non-null and refers to the UCSBRequirement with id toe.id,
+     * and toe.error is null
+     * 
+     * Post-condition: if UCSBRequirement belongs to current user, then error is still null.
+     * Otherwise error is a suitable
+     * return value.
+     */
+
+    // public UCSBRequirementOrError doesUCSBRequirementBelongToCurrentUser(UCSBRequirementOrError toe) {
+    //     CurrentUser currentUser = getCurrentUser();
+    //     log.info("currentUser={}", currentUser);
+
+    //     Long currentUserId = currentUser.getUser().getId();
+    //     Long UCSBRequirementUserId = toe.ucsbRequirement.getUser().getId();
+    //     log.info("currentUserId={} UCSBRequirementUserId={}", currentUserId, UCSBRequirementUserId);
+
+    //     if (UCSBRequirementUserId != currentUserId) {
+    //         toe.error = ResponseEntity
+    //                 .badRequest()
+    //                 .body(String.format("UCSBRequirement with id %d not found", toe.id));
+    //     }
+    //     return toe;
+    // }
+
+}
+
+
         // private long id;
         // private String requirementCode;
         // private String requirementTranslation;
@@ -109,11 +191,3 @@ public class UCSBRequirementController extends ApiController {
         //       "units": 4,
         //       "inactive": false
         //     }]
-
-
-    }
-
-
-
-
-}
