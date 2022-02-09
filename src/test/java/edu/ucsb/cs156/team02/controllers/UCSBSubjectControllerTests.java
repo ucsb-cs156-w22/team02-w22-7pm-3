@@ -147,6 +147,23 @@ public class UCSBSubjectControllerTests extends ControllerTestCase {
         String responseString = response.getResponse().getContentAsString();
         assertEquals(expectedReturn, responseString);
     }
+    
+    @WithMockUser(roles = { "USER" })
+    @Test
+    public void api_UCSBSubject__user_logged_in__delete_UCSBSubject() throws Exception {
+        UCSBSubject ucsbSubject = UCSBSubject.builder().subjectCode("testSubjectCode").subjectTranslation("testSubjectTranslation").deptCode("testDeptCode").CollegeCode("testCollegeCode").relatedDeptCode("testRelatedDeptCode").inactive(true).id(123L).build();
+        when(ucsbSubjectRepository.findById(eq(123L))).thenReturn(Optional.of(ucsbSubject));
+
+        MvcResult response =  mockMvc.perform(
+            delete("/api/UCSBSubjects?id=123")
+                    .with(csrf()))
+            .andExpect(status().isOk()).andReturn();
+
+            verify(ucsbSubjectRepository, times(1)).findById(123L);
+            verify(ucsbSubjectRepository, times(1)).deleteById(123L);
+            String responseString = response.getResponse().getContentAsString();
+            assertEquals("record 123 deleted", responseString);
+    }
 
     @WithMockUser(roles = { "USER" })
     @Test
@@ -174,5 +191,20 @@ public class UCSBSubjectControllerTests extends ControllerTestCase {
         verify(ucsbSubjectRepository, times(1)).findById(123L);
         String responseString = response.getResponse().getContentAsString();
         assertEquals("id 123 not found", responseString);
+    }
+    
+    @WithMockUser(roles = { "USER" })
+    @Test
+    public void api_UCSBSubject__user_logged_in__delete_UCSBSubject_that_does_not_exist() throws Exception {
+        when(ucsbSubjectRepository.findById(eq(123L))).thenReturn(Optional.empty());
+
+        MvcResult response = mockMvc.perform(
+        delete("/api/UCSBSubjects?id=123")
+                .with(csrf()))
+        .andExpect(status().isBadRequest()).andReturn();
+        
+        verify(ucsbSubjectRepository,times(1)).findById(eq(123L));
+        String responseString = response.getResponse().getContentAsString();
+        assertEquals("id 123 not found",responseString);
     }
 }
