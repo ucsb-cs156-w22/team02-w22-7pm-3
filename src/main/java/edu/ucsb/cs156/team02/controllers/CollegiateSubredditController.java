@@ -127,4 +127,28 @@ public class CollegiateSubredditController extends ApiController{
 
     }
 
+    @ApiOperation(value = "Update a single record.")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @PutMapping("")
+    public ResponseEntity<String> putRecordById_admin(
+            @ApiParam("id") @RequestParam Long id,
+            @RequestBody @Valid CollegiateSubreddit incomingRecord) throws JsonProcessingException {
+        loggingService.logMethod();
+
+        RecordOrError roe = new RecordOrError(id);
+
+        roe = doesRecordExist(roe);
+        if (roe.error != null) {
+            return roe.error;
+        }
+
+        // Even the admin can't change the user; they can change other details
+        // but not that.
+
+        collegiateSubredditRepository.save(incomingRecord);
+
+        String body = mapper.writeValueAsString(incomingRecord);
+        return ResponseEntity.ok().body(body);
+    }
+
 }
