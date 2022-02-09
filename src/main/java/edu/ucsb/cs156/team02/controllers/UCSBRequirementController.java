@@ -136,7 +136,7 @@ public class UCSBRequirementController extends ApiController {
             return ucsboe.error;
         }
 
-        ucsbReq.setId(id);
+        //ucsbReq.setId(id);
         ucsbRequirementRepository.save(ucsbReq);
         
         String body = mapper.writeValueAsString(ucsbReq);
