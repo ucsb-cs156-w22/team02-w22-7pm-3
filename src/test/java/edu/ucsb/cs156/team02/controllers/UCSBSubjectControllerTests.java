@@ -148,6 +148,7 @@ public class UCSBSubjectControllerTests extends ControllerTestCase {
         assertEquals(expectedReturn, responseString);
     }
     
+
     @WithMockUser(roles = { "USER" })
     @Test
     public void api_UCSBSubject__user_logged_in__delete_UCSBSubject() throws Exception {

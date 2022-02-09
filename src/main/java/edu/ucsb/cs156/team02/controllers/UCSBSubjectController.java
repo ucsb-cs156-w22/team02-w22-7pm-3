@@ -91,13 +91,7 @@ public class UCSBSubjectController extends ApiController {
     @ApiOperation(value = "Get a single UCSBSubject by ID")
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("")
-<<<<<<< HEAD
-    public ResponseEntity<String> getSubjectByID(@ApiParam("ID") @RequestParam Long id) throws JsonProcessingException {
-        
-=======
     public ResponseEntity<String> getSubjectByID(@ApiParam("The ID of the UCSBSubject you wish to get") @RequestParam Long id) throws JsonProcessingException {
-
->>>>>>> 66ea107 (Added methods and tests for delte single UCSBSubject)
         loggingService.logMethod();
         UCSBSubjectOrError soe = new UCSBSubjectOrError(id);
         
@@ -109,7 +103,6 @@ public class UCSBSubjectController extends ApiController {
         return ResponseEntity.ok().body(body);
     }
 
-<<<<<<< HEAD
     //Function implements an endpoint in order to submit an UCSB subject based on specific id to the database record.
     @ApiOperation(value = "Update a single UCSBSubject via id")
     @PreAuthorize("hasRole('ROLE_USER')")
@@ -142,7 +135,7 @@ public class UCSBSubjectController extends ApiController {
         String body = mapper.writeValueAsString(incomingUCSBSubject);
         return ResponseEntity.ok().body(body);
     }
-=======
+
     @ApiOperation(value = "Delete a UCSBSubject by ID")
     @PreAuthorize("hasRole('ROLE_USER')")
     @DeleteMapping("")
@@ -160,7 +153,7 @@ public class UCSBSubjectController extends ApiController {
         return ResponseEntity.ok().body(String.format("record %d deleted", id)); 
     }
 
->>>>>>> 66ea107 (Added methods and tests for delte single UCSBSubject)
+
     // soe.id is item being looked up
     // If UCSBSubject with id soe.id exists, it is copied to soe.UCSBSubject and toe.error is null
     // Otherwise, soe.error is the appropriate string to report the error condition that UCSBSubject with id soe.id does not exist
