@@ -130,7 +130,7 @@ public class CollegiateSubredditControllerTests extends ControllerTestCase {
         when(collegiateSubredditRepository.findById(eq(123L))).thenReturn(Optional.of(CollegiateSubreddit1));
 
         // act
-        MvcResult response = mockMvc.perform(get("/api/collegiateSubreddits?id=123"))
+        MvcResult response = mockMvc.perform(get("/api/collegiate_subreddits?id=123"))
                 .andExpect(status().isOk()).andReturn();
 
         // assert
@@ -147,7 +147,7 @@ public class CollegiateSubredditControllerTests extends ControllerTestCase {
 
         when(collegiateSubredditRepository.findById(eq(123L))).thenReturn(Optional.empty());
 
-        MvcResult response = mockMvc.perform(get("/api/collegiateSubreddits?id=123")).andExpect(status().isBadRequest()).andReturn();
+        MvcResult response = mockMvc.perform(get("/api/collegiate_subreddits?id=123")).andExpect(status().isBadRequest()).andReturn();
 
         verify(collegiateSubredditRepository,times(1)).findById(eq(123L));
         String responseString = response.getResponse().getContentAsString();
