@@ -178,16 +178,78 @@ public class CollegiateSubredditControllerTests extends ControllerTestCase {
 
     @WithMockUser(roles = { "USER","ADMIN" })
     @Test
-    public void api_todos__user_logged_in__delete_todo_that_does_not_exist() throws Exception {
+    public void api_CollegiateSubreddit__user_logged_in__delete_CollegiateSubreddit_that_does_not_exist() throws Exception {
         // arrange
 
-        CollegiateSubreddit CollegiateSubreddit1 = CollegiateSubreddit.builder().
-        name("CollegiateSubreddit 1").location("CollegiateSubreddit 1").subreddit("CollegiateSubreddit 1").id(123L).build();
+        CollegiateSubreddit CollegiateSubreddit1 = CollegiateSubreddit.builder().name("CollegiateSubreddit 1").location("CollegiateSubreddit 1").subreddit("CollegiateSubreddit 1").id(123L).build();
         when(collegiateSubredditRepository.findById(eq(123L))).thenReturn(Optional.empty());
 
         // act
         MvcResult response = mockMvc.perform(
                 delete("/api/collegiate_subreddits?id=123")
+                        .with(csrf()))
+                .andExpect(status().isBadRequest()).andReturn();
+
+        // assert
+        verify(collegiateSubredditRepository, times(1)).findById(123L);
+        String responseString = response.getResponse().getContentAsString();
+        assertEquals("record 123 not found", responseString);
+    }
+
+    @WithMockUser(roles = { "USER","ADMIN" })
+    @Test
+    public void api_CollegiateSubreddit__user_logged_in__put_CollegiateSubreddit() throws Exception {
+        // arrange
+
+        CollegiateSubreddit CollegiateSubreddit1 = CollegiateSubreddit.builder().
+        name("CollegiateSubreddit 1").location("CollegiateSubreddit 1").subreddit("CollegiateSubreddit 1").id(123L).build();
+        // We deliberately set the user information to another user
+        // This shoudl get ignored and overwritten with currrent user when todo is saved
+
+        CollegiateSubreddit updatedRecord = CollegiateSubreddit.builder().
+        name("New CollegiateSubreddit").location("New CollegiateSubreddit").subreddit("New CollegiateSubreddit").id(123L).build();
+        CollegiateSubreddit correctRecord = CollegiateSubreddit.builder().
+        name("New CollegiateSubreddit").location("New CollegiateSubreddit").subreddit("New CollegiateSubreddit").id(123L).build();
+
+        String requestBody = mapper.writeValueAsString(updatedRecord);
+        String expectedReturn = mapper.writeValueAsString(correctRecord);
+
+        when(collegiateSubredditRepository.findById(eq(123L))).thenReturn(Optional.of(CollegiateSubreddit1));
+
+        // act
+        MvcResult response = mockMvc.perform(
+                put("/api/collegiate_subreddits?id=123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(requestBody)
+                        .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+
+        // assert
+        verify(collegiateSubredditRepository, times(1)).findById(123L);
+        verify(collegiateSubredditRepository, times(1)).save(correctRecord); // should be saved with correct user
+        String responseString = response.getResponse().getContentAsString();
+        assertEquals(expectedReturn, responseString);
+    }
+
+    @WithMockUser(roles = { "USER", "ADMIN" })
+    @Test
+    public void api_CollegiateSubreddit__user_logged_in__cannot_put_CollegiateSubreddit_that_does_not_exist() throws Exception {
+        // arrange
+
+        CollegiateSubreddit updatedRecord = CollegiateSubreddit.builder().
+        name("New CollegiateSubreddit").location("New CollegiateSubreddit").subreddit("New CollegiateSubreddit").id(123L).build();
+
+        String requestBody = mapper.writeValueAsString(updatedRecord);
+
+        when(collegiateSubredditRepository.findById(eq(123L))).thenReturn(Optional.empty());
+
+        // act
+        MvcResult response = mockMvc.perform(
+                put("/api/collegiate_subreddits?id=123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(requestBody)
                         .with(csrf()))
                 .andExpect(status().isBadRequest()).andReturn();
 
