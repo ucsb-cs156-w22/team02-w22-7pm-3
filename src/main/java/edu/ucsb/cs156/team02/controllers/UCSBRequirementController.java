@@ -124,7 +124,7 @@ public class UCSBRequirementController extends ApiController {
     @ApiOperation(value = "Get a single UCSBRequirement by ID")
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("")
-    public ResponseEntity<String> getSRequirementByID(@ApiParam("ID") @RequestParam Long id) throws JsonProcessingException {
+    public ResponseEntity<String> getRequirementByID(@ApiParam("ID") @RequestParam Long id) throws JsonProcessingException {
 
         loggingService.logMethod();
         UCSBRequirementOrError soe = new UCSBRequirementOrError(id);

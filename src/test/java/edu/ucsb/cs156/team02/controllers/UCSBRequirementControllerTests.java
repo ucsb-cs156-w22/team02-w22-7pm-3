@@ -186,7 +186,7 @@ public class UCSBRequirementControllerTests extends ControllerTestCase {
                 .requirementCode("Test requirementCode").requirementTranslation("Test requirementTranslation").collegeCode("Test collegeCode").objCode("Test objCode").courseCount(1).units(1).inactive(true).id(15L).build();
         when(UcsbRequirementRepository.findById(eq(123L))).thenReturn(Optional.of(ucsbRequirement1));
 
-        MvcResult response = mockMvc.perform(get("/api/UCSBSubjects?id=123")).andExpect(status().isOk()).andReturn();
+        MvcResult response = mockMvc.perform(get("/api/UCSBRequirements?id=123")).andExpect(status().isOk()).andReturn();
 
         verify(UcsbRequirementRepository,times(1)).findById(eq(123L));
         String expectedJSON = mapper.writeValueAsString(ucsbRequirement1);
@@ -200,11 +200,11 @@ public class UCSBRequirementControllerTests extends ControllerTestCase {
 
         when(UcsbRequirementRepository.findById(eq(123L))).thenReturn(Optional.empty());
 
-        MvcResult response = mockMvc.perform(get("/api/UCSBSubjects?id=123")).andExpect(status().isBadRequest()).andReturn();
+        MvcResult response = mockMvc.perform(get("/api/UCSBRequirements?id=123")).andExpect(status().isBadRequest()).andReturn();
 
         verify(UcsbRequirementRepository,times(1)).findById(eq(123L));
         String responseString = response.getResponse().getContentAsString();
-        assertEquals("id 123 not found",responseString);
+        assertEquals("record 123 not found",responseString);
     }
 
 }
