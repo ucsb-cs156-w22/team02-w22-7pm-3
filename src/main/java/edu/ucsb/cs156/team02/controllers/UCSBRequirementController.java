@@ -77,7 +77,7 @@ public class UCSBRequirementController extends ApiController {
             // @ApiParam("id") @RequestParam Long id,
             @ApiParam("GE Letter") @RequestParam String requirementCode,
             @ApiParam("Subject Type") @RequestParam String requirementTranslation,
-            @ApiParam("Only 'ENGR' or 'L&S' or 'UCSB'") @RequestParam String collegeCode,
+            @ApiParam("College Code: Only 'ENGR' or 'L&S' or 'UCSB'") @RequestParam String collegeCode,
             @ApiParam("Degree Type") @RequestParam String objCode,
             @ApiParam("Course Count") @RequestParam Integer courseCount,      //Description names should be improved
             @ApiParam("Units") @RequestParam Integer units,
