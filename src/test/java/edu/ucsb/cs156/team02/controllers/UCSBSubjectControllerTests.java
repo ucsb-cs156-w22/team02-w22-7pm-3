@@ -119,7 +119,7 @@ public class UCSBSubjectControllerTests extends ControllerTestCase {
         
         // User u = currentUserService.getCurrentUser().getUser();
         // User otherUser = User.builder().id(999).build();
-        // Todo todo1 = Todo.builder().title("Todo 1").details("Todo 1").done(false).user(u).id(67L).build();
+        UCSBSubject ucsbSubject1 = UCSBSubject.builder().title("ucsb Subject 1").details("ucsb Subject 1").done(false)/*.user(u)*/.id(123L).build();
         
         // // We deliberately set the user information to another user
         // This shoudl get ignored and overwritten with currrent user when todo is saved
@@ -130,7 +130,7 @@ public class UCSBSubjectControllerTests extends ControllerTestCase {
         String requestBody = mapper.writeValueAsString(updatedUCSBSubject);
         String expectedReturn = mapper.writeValueAsString(correctUCSBSubject);
 
-        when(ucsbSubjectRepository.findById(eq(123L))).thenReturn(/*Optional.of(todo1)*/);
+        when(ucsbSubjectRepository.findById(eq(123L))).thenReturn(Optional.of(ucsbSubject1));
 
         // act
         MvcResult response = mockMvc.perform(
@@ -142,7 +142,7 @@ public class UCSBSubjectControllerTests extends ControllerTestCase {
                 .andExpect(status().isOk()).andReturn();
 
         // assert
-        verify(ucsbSubjectRepository, times(1)).findById(67L);
+        verify(ucsbSubjectRepository, times(1)).findById(123L);
         verify(ucsbSubjectRepository, times(1)).save(correctUCSBSubject); // should be saved with correct user
         String responseString = response.getResponse().getContentAsString();
         assertEquals(expectedReturn, responseString);
@@ -153,15 +153,15 @@ public class UCSBSubjectControllerTests extends ControllerTestCase {
     public void api_todos__user_logged_in__cannot_put_UCSBSubject_that_does_not_exist() throws Exception {
         // arrange
 
-        UCSBSubject updatedUCSBSubject = UCSBSubject.builder().title("New Title").details("New Details").done(true).id(67L).build();
+        UCSBSubject updatedUCSBSubject = UCSBSubject.builder().title("New Title").details("New Details").done(true).id(123L).build();
 
         String requestBody = mapper.writeValueAsString(updatedUCSBSubject);
 
-        when(ucsbSubjectRepository.findById(eq(67L))).thenReturn(Optional.empty());
+        when(ucsbSubjectRepository.findById(eq(123L))).thenReturn(Optional.empty());
 
         // act
         MvcResult response = mockMvc.perform(
-                put("/api/todos?id=67")
+                put("/api/UCSBSubjects?id=123")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("utf-8")
                         .content(requestBody)
@@ -169,8 +169,8 @@ public class UCSBSubjectControllerTests extends ControllerTestCase {
                 .andExpect(status().isBadRequest()).andReturn();
 
         // assert
-        verify(ucsbSubjectRepository, times(1)).findById(67L);
+        verify(ucsbSubjectRepository, times(1)).findById(123L);
         String responseString = response.getResponse().getContentAsString();
-        assertEquals("todo with id 67 not found", responseString);
+        assertEquals("id 123 not found", responseString);
     }
 }

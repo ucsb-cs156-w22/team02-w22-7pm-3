@@ -30,9 +30,9 @@ public class UCSBSubject {
 //   @ManyToOne
 //   @JoinColumn(name = "user_id")
 //   private User user;
-//   private String title;
-//   private String details;
-//   private boolean done;
+  private String title;
+  private String details;
+  private boolean done;
 
 
 
