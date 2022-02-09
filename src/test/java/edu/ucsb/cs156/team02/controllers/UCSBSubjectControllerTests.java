@@ -113,30 +113,64 @@ public class UCSBSubjectControllerTests extends ControllerTestCase {
     //tests for PUT for the UCSBSubject Controller
     @WithMockUser(roles = { "USER" })
     @Test
-    public void api_UCSBSubject__user_logged_in__updated_UCSBSubject() throws Exception {
-        
-        UCSBSubject ucsbSubject = UCSBSubject.builder().subjectCode("testSubjectCode").subjectTranslation("testSubjectTranslation").deptCode("testDeptCode").CollegeCode("testCollegeCode").relatedDeptCode("testRelatedDeptCode").inactive(true).id(123L).build();
-        when(ucsbSubjectRepository.findById(eq(123L))).thenReturn(Optional.of(ucsbSubject));
+    public void api_todos__user_logged_in__put_UCSBSubject() throws Exception {
+        // arrange
 
-        MvcResult response = mockMvc.perform(put("/api/UCSBSubjects?id=123")).andExpect(status().isOk()).andReturn();
-            
-        verify(ucsbSubjectRepository,times(1)).findById(eq(123L));
-        String expectedJSON = mapper.writeValueAsString(ucsbSubject);
+        
+        // User u = currentUserService.getCurrentUser().getUser();
+        // User otherUser = User.builder().id(999).build();
+        // Todo todo1 = Todo.builder().title("Todo 1").details("Todo 1").done(false).user(u).id(67L).build();
+        
+        // // We deliberately set the user information to another user
+        // This shoudl get ignored and overwritten with currrent user when todo is saved
+
+        UCSBSubject updatedUCSBSubject = UCSBSubject.builder().title("New Title").details("New Details").done(true)/*.user(otherUser)*/.id(123L).build();
+        UCSBSubject correctUCSBSubject = UCSBSubject.builder().title("New Title").details("New Details").done(true)/*.user(u)*/.id(123L).build();
+
+        String requestBody = mapper.writeValueAsString(updatedUCSBSubject);
+        String expectedReturn = mapper.writeValueAsString(correctUCSBSubject);
+
+        when(ucsbSubjectRepository.findById(eq(123L))).thenReturn(/*Optional.of(todo1)*/);
+
+        // act
+        MvcResult response = mockMvc.perform(
+                put("/api/UCSBSubjects?id=123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(requestBody)
+                        .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+
+        // assert
+        verify(ucsbSubjectRepository, times(1)).findById(67L);
+        verify(ucsbSubjectRepository, times(1)).save(correctUCSBSubject); // should be saved with correct user
         String responseString = response.getResponse().getContentAsString();
-        assertEquals(expectedJSON,responseString);
+        assertEquals(expectedReturn, responseString);
     }
-    /*
+
     @WithMockUser(roles = { "USER" })
     @Test
-    public void api_UCSBSubject__user_logged_in__update_for_UCSBSubject_failed() throws Exception {
-        
-        when(ucsbSubjectRepository.findById(eq(123L))).thenReturn(Optional.empty());
+    public void api_todos__user_logged_in__cannot_put_UCSBSubject_that_does_not_exist() throws Exception {
+        // arrange
 
-        MvcResult response = mockMvc.perform(put("/api/UCSBSubjects?id=123")).andExpect(status().isBadRequest()).andReturn();
-        
-        verify(ucsbSubjectRepository,times(1)).findById(eq(123L));
+        UCSBSubject updatedUCSBSubject = UCSBSubject.builder().title("New Title").details("New Details").done(true).id(67L).build();
+
+        String requestBody = mapper.writeValueAsString(updatedUCSBSubject);
+
+        when(ucsbSubjectRepository.findById(eq(67L))).thenReturn(Optional.empty());
+
+        // act
+        MvcResult response = mockMvc.perform(
+                put("/api/todos?id=67")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8")
+                        .content(requestBody)
+                        .with(csrf()))
+                .andExpect(status().isBadRequest()).andReturn();
+
+        // assert
+        verify(ucsbSubjectRepository, times(1)).findById(67L);
         String responseString = response.getResponse().getContentAsString();
-        assertEquals("id 123 not found",responseString);
+        assertEquals("todo with id 67 not found", responseString);
     }
-    */
 }
