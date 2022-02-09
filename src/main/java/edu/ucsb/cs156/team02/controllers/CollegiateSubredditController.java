@@ -33,6 +33,16 @@ import java.util.Optional;
 @Slf4j
 public class CollegiateSubredditController extends ApiController{
 
+    public class RecordOrError {
+        Long id;
+        CollegiateSubreddit record;
+        ResponseEntity<String> error;
+
+        public RecordOrError(Long id) {
+            this.id = id;
+        }
+    }
+
     @Autowired
     CollegiateSubredditRepository collegiateSubredditRepository;
 
@@ -65,6 +75,56 @@ public class CollegiateSubredditController extends ApiController{
         collegiateSubreddit.setSubreddit(subreddit);
         CollegiateSubreddit savedCollegiateSubreddit = collegiateSubredditRepository.save(collegiateSubreddit);
         return savedCollegiateSubreddit;
+    }
+
+    @ApiOperation(value = "Get a single record by its ID.")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("")
+    public ResponseEntity<String> getRecordById(
+        @ApiParam("id") @RequestParam Long id) throws JsonProcessingException {
+        loggingService.logMethod();
+
+        RecordOrError roe = new RecordOrError(id);
+
+        roe = doesRecordExist(roe);
+        if (roe.error != null) {
+            return roe.error;
+        }
+
+        String body = mapper.writeValueAsString(roe.record);
+        return ResponseEntity.ok().body(body);
+    }
+
+    public RecordOrError doesRecordExist(RecordOrError roe) {
+        Optional<CollegiateSubreddit> optionalRecord = collegiateSubredditRepository.findById(roe.id);
+
+        if(optionalRecord.isEmpty()) {
+            roe.error = ResponseEntity
+            .badRequest()
+            .body(String.format("record %d not found", roe.id));
+        }else{
+            roe.record = optionalRecord.get();
+        }
+        return roe;
+    }
+
+    @ApiOperation(value = "Delete a record by ID")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @DeleteMapping("")
+    public ResponseEntity<String> deleteTodo(
+            @ApiParam("id") @RequestParam Long id) {
+        loggingService.logMethod();
+
+        RecordOrError roe = new RecordOrError(id);
+
+        roe = doesRecordExist(roe);
+        if (roe.error != null) {
+            return roe.error;
+        }
+
+        collegiateSubredditRepository.deleteById(id);
+        return ResponseEntity.ok().body(String.format("record %d deleted", id));
+
     }
 
 }
