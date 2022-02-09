@@ -121,6 +121,25 @@ public class UCSBRequirementController extends ApiController {
 
     }
 
+
+    
+
+    @ApiOperation(value = "Get a single UCSBRequirement by ID")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("")
+    public ResponseEntity<String> getRequirementByID(@ApiParam("ID") @RequestParam Long id) throws JsonProcessingException {
+
+        loggingService.logMethod();
+        UCSBRequirementOrError soe = new UCSBRequirementOrError(id);
+
+        soe = doesUCSBRequirementExist(soe);
+        if (soe.error != null) {
+            return soe.error;
+        }
+        String body = mapper.writeValueAsString(soe.ucsbRequirement);
+        return ResponseEntity.ok().body(body);
+    }
+
     @ApiOperation(value = "Update a single UCSBRequirement if belong to current user")
     @PreAuthorize("hasRole('ROLE_USER')")
     @PutMapping("")
@@ -143,9 +162,6 @@ public class UCSBRequirementController extends ApiController {
         return ResponseEntity.ok().body(body);
     
     }
-    
-
-
 
     /**
      * Pre-conditions: toe.id is value to look up, toe.UCSBRequirement and toe.error are null
