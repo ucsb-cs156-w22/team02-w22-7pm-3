@@ -151,6 +151,49 @@ public class CollegiateSubredditControllerTests extends ControllerTestCase {
 
         verify(collegiateSubredditRepository,times(1)).findById(eq(123L));
         String responseString = response.getResponse().getContentAsString();
-        assertEquals("id 123 not found",responseString);
+        assertEquals("record 123 not found",responseString);
+    }
+
+    @WithMockUser(roles = { "USER","ADMIN" })
+    @Test
+    public void api_CollegiateSubreddit__user_logged_in__delete_CollegiateSubreddit() throws Exception {
+        // arrange
+
+        CollegiateSubreddit CollegiateSubreddit1 = CollegiateSubreddit.builder().
+        name("CollegiateSubreddit 1").location("CollegiateSubreddit 1").subreddit("CollegiateSubreddit 1").id(123L).build();
+        when(collegiateSubredditRepository.findById(eq(123L))).thenReturn(Optional.of(CollegiateSubreddit1));
+
+        // act
+        MvcResult response = mockMvc.perform(
+                delete("/api/collegiate_subreddits?id=123")
+                        .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+
+        // assert
+        verify(collegiateSubredditRepository, times(1)).findById(123L);
+        verify(collegiateSubredditRepository, times(1)).deleteById(123L);
+        String responseString = response.getResponse().getContentAsString();
+        assertEquals("record 123 deleted", responseString);
+    }
+
+    @WithMockUser(roles = { "USER","ADMIN" })
+    @Test
+    public void api_todos__user_logged_in__delete_todo_that_does_not_exist() throws Exception {
+        // arrange
+
+        CollegiateSubreddit CollegiateSubreddit1 = CollegiateSubreddit.builder().
+        name("CollegiateSubreddit 1").location("CollegiateSubreddit 1").subreddit("CollegiateSubreddit 1").id(123L).build();
+        when(collegiateSubredditRepository.findById(eq(123L))).thenReturn(Optional.empty());
+
+        // act
+        MvcResult response = mockMvc.perform(
+                delete("/api/collegiate_subreddits?id=123")
+                        .with(csrf()))
+                .andExpect(status().isBadRequest()).andReturn();
+
+        // assert
+        verify(collegiateSubredditRepository, times(1)).findById(123L);
+        String responseString = response.getResponse().getContentAsString();
+        assertEquals("record 123 not found", responseString);
     }
 }

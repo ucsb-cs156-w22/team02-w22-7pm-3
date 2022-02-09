@@ -101,11 +101,30 @@ public class CollegiateSubredditController extends ApiController{
         if(optionalRecord.isEmpty()) {
             roe.error = ResponseEntity
             .badRequest()
-            .body(String.format("id %d not found", roe.id));
+            .body(String.format("record %d not found", roe.id));
         }else{
             roe.record = optionalRecord.get();
         }
         return roe;
+    }
+
+    @ApiOperation(value = "Delete a record by ID")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @DeleteMapping("")
+    public ResponseEntity<String> deleteTodo(
+            @ApiParam("id") @RequestParam Long id) {
+        loggingService.logMethod();
+
+        RecordOrError roe = new RecordOrError(id);
+
+        roe = doesRecordExist(roe);
+        if (roe.error != null) {
+            return roe.error;
+        }
+
+        collegiateSubredditRepository.deleteById(id);
+        return ResponseEntity.ok().body(String.format("record %d deleted", id));
+
     }
 
 }
