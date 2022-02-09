@@ -105,7 +105,7 @@ public class UCSBRequirementController extends ApiController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @DeleteMapping("")
     public ResponseEntity<String> deleteUCSBRequirement(
-            @ApiParam("id") @RequestParam Long id) {
+            @ApiParam("The id of the UCSBRequirement you wish to delete") @RequestParam Long id) {
         loggingService.logMethod();
 
         UCSBRequirementOrError toe = new UCSBRequirementOrError(id);

@@ -118,8 +118,7 @@ public class UCSBRequirementControllerTests extends ControllerTestCase {
                 post("/api/UCSBRequirements/post?requirementCode=Test " +  
                 "requirementCode&requirementTranslation=Test requirementTranslation&collegeCode=Test collegeCode&objCode=Test objCode"+
                 "&courseCount=1&units=1&inactive=true")
-                        .with(csrf()))
-                .andExpect(status().isOk()).andReturn();
+                        .with(csrf())).andExpect(status().isOk()).andReturn();
 
         // assert
         verify(UcsbRequirementRepository, times(1)).save(expectedUCSBRequirement);
@@ -128,5 +127,54 @@ public class UCSBRequirementControllerTests extends ControllerTestCase {
         assertEquals(expectedJson, responseString);
     }
 
+
+    @WithMockUser(roles = { "USER" })
+    @Test
+    public void api_todos__user_logged_in__delete_UCSBRequirement() throws Exception {
+        // arrange
+
+        // User otherUser = User.builder().id(98L).build();
+        UCSBRequirement ucsbRequirement1 = UCSBRequirement.builder()
+                .requirementCode("Test requirementCode").requirementTranslation("Test requirementTranslation").collegeCode("Test collegeCode").objCode("Test objCode").courseCount(1).units(1).inactive(true).id(15L).build();
+        
+        when(UcsbRequirementRepository.findById(eq(15L))).thenReturn(Optional.of(ucsbRequirement1));
+
+        // act
+        MvcResult response = mockMvc.perform(
+                delete("/api/UCSBRequirements?id=15")
+                        .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+
+        // assert
+        verify(UcsbRequirementRepository, times(1)).findById(15L);
+        verify(UcsbRequirementRepository, times(1)).deleteById(15L);
+        String responseString = response.getResponse().getContentAsString();
+        assertEquals("record 15 deleted", responseString);
+    }
+
+
+
+    @WithMockUser(roles = { "USER" })
+    @Test
+    public void api_todos__user_logged_in__delete_UCSBRequirement_that_does_not_exist() throws Exception {
+        // arrange
+
+        // User otherUser = User.builder().id(98L).build();
+        UCSBRequirement ucsbRequirement1 = UCSBRequirement.builder()
+                .requirementCode("Test requirementCode").requirementTranslation("Test requirementTranslation").collegeCode("Test collegeCode").objCode("Test objCode").courseCount(1).units(1).inactive(true).id(15L).build();
+        
+        when(UcsbRequirementRepository.findById(eq(15L))).thenReturn(Optional.empty());
+
+        // act
+        MvcResult response = mockMvc.perform(
+                delete("/api/UCSBRequirements?id=15")
+                        .with(csrf()))
+                .andExpect(status().isBadRequest()).andReturn();
+
+        // assert
+        verify(UcsbRequirementRepository, times(1)).findById(15L);
+        String responseString = response.getResponse().getContentAsString();
+        assertEquals("record 15 not found", responseString);
+    }
 
 }
