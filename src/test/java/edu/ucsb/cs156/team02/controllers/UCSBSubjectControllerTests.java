@@ -119,13 +119,13 @@ public class UCSBSubjectControllerTests extends ControllerTestCase {
         
         // User u = currentUserService.getCurrentUser().getUser();
         // User otherUser = User.builder().id(999).build();
-        UCSBSubject ucsbSubject1 = UCSBSubject.builder().title("ucsb Subject 1").details("ucsb Subject 1").done(false)/*.user(u)*/.id(123L).build();
+        UCSBSubject ucsbSubject1 = UCSBSubject.builder().subjectCode("testSubjectCode 1").subjectTranslation("testSubjectTranslation 1").deptCode("testDeptCode 1").CollegeCode("testCollegeCode").relatedDeptCode("testRelatedDeptCode").id(123L).build();
         
         // // We deliberately set the user information to another user
         // This shoudl get ignored and overwritten with currrent user when todo is saved
 
-        UCSBSubject updatedUCSBSubject = UCSBSubject.builder().title("New Title").details("New Details").done(true)/*.user(otherUser)*/.id(123L).build();
-        UCSBSubject correctUCSBSubject = UCSBSubject.builder().title("New Title").details("New Details").done(true)/*.user(u)*/.id(123L).build();
+        UCSBSubject updatedUCSBSubject = UCSBSubject.builder().subjectCode("testSubjectCode").subjectTranslation("testSubjectTranslation").deptCode("testDeptCode").CollegeCode("testCollegeCode").relatedDeptCode("testRelatedDeptCode").id(123L).build();
+        UCSBSubject correctUCSBSubject = UCSBSubject.builder().subjectCode("testSubjectCode").subjectTranslation("testSubjectTranslation").deptCode("testDeptCode").CollegeCode("testCollegeCode").relatedDeptCode("testRelatedDeptCode").id(123L).build();
 
         String requestBody = mapper.writeValueAsString(updatedUCSBSubject);
         String expectedReturn = mapper.writeValueAsString(correctUCSBSubject);
@@ -153,7 +153,9 @@ public class UCSBSubjectControllerTests extends ControllerTestCase {
     public void api_todos__user_logged_in__cannot_put_UCSBSubject_that_does_not_exist() throws Exception {
         // arrange
 
-        UCSBSubject updatedUCSBSubject = UCSBSubject.builder().title("New Title").details("New Details").done(true).id(123L).build();
+        //UCSBSubject updatedUCSBSubject = UCSBSubject.builder().title("New Title").details("New Details").done(true).id(123L).build();
+        UCSBSubject updatedUCSBSubject = UCSBSubject
+        .builder().subjectCode("testSubjectCode").subjectTranslation("testSubjectTranslation").deptCode("testDeptCode").CollegeCode("testCollegeCode").relatedDeptCode("testRelatedDeptCode").id(123L).build();
 
         String requestBody = mapper.writeValueAsString(updatedUCSBSubject);
 
