@@ -92,7 +92,6 @@ public class UCSBSubjectController extends ApiController {
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("")
     public ResponseEntity<String> getSubjectByID(@ApiParam("The ID of the UCSBSubject you wish to get") @RequestParam Long id) throws JsonProcessingException {
-
         loggingService.logMethod();
         UCSBSubjectOrError soe = new UCSBSubjectOrError(id);
         
@@ -101,6 +100,39 @@ public class UCSBSubjectController extends ApiController {
             return soe.error;
         }
         String body = mapper.writeValueAsString(soe.ucsbSubject);
+        return ResponseEntity.ok().body(body);
+    }
+
+    //Function implements an endpoint in order to submit an UCSB subject based on specific id to the database record.
+    @ApiOperation(value = "Update a single UCSBSubject via id")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @PutMapping("")
+    public ResponseEntity<String> putSubjectById(
+            @ApiParam("id") @RequestParam Long id,
+            @RequestBody @Valid UCSBSubject incomingUCSBSubject) throws JsonProcessingException {
+        loggingService.logMethod();
+
+        //CurrentUser currentUser = getCurrentUser();
+        //User user = currentUser.getUser();
+
+        UCSBSubjectOrError soe = new UCSBSubjectOrError(id);
+
+        soe = doesUCSBSubjectExist(soe);
+        if (soe.error != null) {
+            return soe.error;
+        }
+
+        /*
+        soe = doesTodoBelongToCurrentUser(soe);
+        if (soe.error != null) {
+            return soe.error;
+        }
+        */
+
+        //incomingUCSBSubject.setUser(user);
+        ucsbSubjectRepository.save(incomingUCSBSubject);
+
+        String body = mapper.writeValueAsString(incomingUCSBSubject);
         return ResponseEntity.ok().body(body);
     }
 
@@ -121,6 +153,7 @@ public class UCSBSubjectController extends ApiController {
         return ResponseEntity.ok().body(String.format("record %d deleted", id)); 
     }
 
+
     // soe.id is item being looked up
     // If UCSBSubject with id soe.id exists, it is copied to soe.UCSBSubject and toe.error is null
     // Otherwise, soe.error is the appropriate string to report the error condition that UCSBSubject with id soe.id does not exist
@@ -138,4 +171,30 @@ public class UCSBSubjectController extends ApiController {
         }
         return soe;
     }
+
+    /**
+     * Pre-conditions: soe.todo is non-null and refers to the todo with id soe.id,
+     * and soe.error is null
+     * 
+     * Post-condition: if UCSBSubject belongs to current user, then error is still null.
+     * Otherwise error is a suitable
+     * return value.
+     */
+    /*
+    public UCSBSubjectOrError doesTodoBelongToCurrentUser(UCSBSubjectOrError soe) {
+        CurrentUser currentUser = getCurrentUser();
+        log.info("currentUser={}", currentUser);
+
+        Long currentUserId = currentUser.getUser().getId();
+        Long ucsbUserId = soe.todo.getUser().getId();
+        log.info("currentUserId={} todoUserId={}", currentUserId, ucsbUserId);
+
+        if (ucsbUserId != currentUserId) {
+            soe.error = ResponseEntity
+                    .badRequest()
+                    .body(String.format("todo with id %d not found", soe.id));
+        }
+        return soe;
+    }
+    */
 }
