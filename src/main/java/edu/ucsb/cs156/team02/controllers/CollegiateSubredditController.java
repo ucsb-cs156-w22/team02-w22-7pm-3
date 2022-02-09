@@ -33,6 +33,11 @@ import java.util.Optional;
 @Slf4j
 public class CollegiateSubredditController extends ApiController{
 
+    public class RecordOrError {
+        CollegiateSubreddit record;
+        ResponseEntity<String> error;
+    }
+
     @Autowired
     CollegiateSubredditRepository collegiateSubredditRepository;
 
@@ -65,6 +70,36 @@ public class CollegiateSubredditController extends ApiController{
         collegiateSubreddit.setSubreddit(subreddit);
         CollegiateSubreddit savedCollegiateSubreddit = collegiateSubredditRepository.save(collegiateSubreddit);
         return savedCollegiateSubreddit;
+    }
+
+    @ApiOperation(value = "Returns the database record with id 123 if it exists, or a error message if it does not.")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("")
+    public ResponseEntity<String> getRecord123() throws JsonProcessingException {
+        loggingService.logMethod();
+
+        RecordOrError roe = new RecordOrError();
+
+        roe = doesRecord123Exist(roe);
+        if (roe.error != null) {
+            return roe.error;
+        }
+
+        String body = mapper.writeValueAsString(roe.record);
+        return ResponseEntity.ok().body(body);
+    }
+
+    public RecordOrError doesRecord123Exist(RecordOrError roe) {
+        Optional<CollegiateSubreddit> optionalRecord = collegiateSubredditRepository.findById(123L);
+
+        if(optionalRecord.isEmpty()) {
+            roe.error = ResponseEntity
+            .badRequest()
+            .body(String.format("id 123 not found"));
+        }else{
+            roe.record = optionalRecord.get();
+        }
+        return roe;
     }
 
 }
