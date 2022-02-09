@@ -126,7 +126,7 @@ public class UCSBRequirementController extends ApiController {
     @PutMapping("")
     public ResponseEntity<String> putUCSBRequirementById(
             @ApiParam("id") @RequestParam Long id,
-            @RequestBody @Valid UCSBRequirement incomUcsbRequirement) throws JsonProcessingException {
+            @RequestBody @Valid UCSBRequirement ucsbReq) throws JsonProcessingException {
         loggingService.logMethod();
 
         UCSBRequirementOrError ucsboe = new UCSBRequirementOrError(id);
@@ -136,10 +136,10 @@ public class UCSBRequirementController extends ApiController {
             return ucsboe.error;
         }
 
-        incomUcsbRequirement.setId(id);
-        ucsbRequirementRepository.save(incomUcsbRequirement);
+        ucsbReq.setId(id);
+        ucsbRequirementRepository.save(ucsbReq);
         
-        String body = mapper.writeValueAsString(incomUcsbRequirement);
+        String body = mapper.writeValueAsString(ucsbReq);
         return ResponseEntity.ok().body(body);
     
     }
