@@ -177,4 +177,34 @@ public class UCSBRequirementControllerTests extends ControllerTestCase {
         assertEquals("record 15 not found", responseString);
     }
 
+
+    @WithMockUser(roles = { "USER" })
+    @Test
+    public void api_UCSBRequirement__user_logged_in__search_for_UCSBRequirement() throws Exception {
+
+        UCSBRequirement ucsbRequirement1 = UCSBRequirement.builder()
+                .requirementCode("Test requirementCode").requirementTranslation("Test requirementTranslation").collegeCode("Test collegeCode").objCode("Test objCode").courseCount(1).units(1).inactive(true).id(15L).build();
+        when(UcsbRequirementRepository.findById(eq(123L))).thenReturn(Optional.of(ucsbRequirement1));
+
+        MvcResult response = mockMvc.perform(get("/api/UCSBRequirements?id=123")).andExpect(status().isOk()).andReturn();
+
+        verify(UcsbRequirementRepository,times(1)).findById(eq(123L));
+        String expectedJSON = mapper.writeValueAsString(ucsbRequirement1);
+        String responseString = response.getResponse().getContentAsString();
+        assertEquals(expectedJSON,responseString);
+    }
+
+    @WithMockUser(roles = { "USER" })
+    @Test
+    public void api_UCSBRequirement__user_logged_in__search_for_UCSBRequirement_that_does_not_exist() throws Exception {
+
+        when(UcsbRequirementRepository.findById(eq(123L))).thenReturn(Optional.empty());
+
+        MvcResult response = mockMvc.perform(get("/api/UCSBRequirements?id=123")).andExpect(status().isBadRequest()).andReturn();
+
+        verify(UcsbRequirementRepository,times(1)).findById(eq(123L));
+        String responseString = response.getResponse().getContentAsString();
+        assertEquals("record 123 not found",responseString);
+    }
+
 }
