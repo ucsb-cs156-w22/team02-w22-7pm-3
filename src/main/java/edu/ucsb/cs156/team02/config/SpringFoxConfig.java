@@ -9,8 +9,6 @@ import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger.web.SecurityConfiguration;
-import springfox.documentation.swagger.web.SecurityConfigurationBuilder;
 
 import static springfox.documentation.builders.PathSelectors.regex;
 
@@ -30,20 +28,13 @@ public class SpringFoxConfig {
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.any())
-                .paths(regex("/api/.*|/csrf"))
+                .paths(regex("/api/.*"))
                 .build();
 
     }
 
-    @Bean
-    public SecurityConfiguration security() {
-        return SecurityConfigurationBuilder.builder()
-          .enableCsrfSupport(true)
-          .build();
-    }
-
     private ApiInfo apiInfo() {
-        return new ApiInfo("demo-spring-react-example-v2", "<a href=\"/\">home</a>", null, null, null, null, null, Collections.EMPTY_LIST);
+        return new ApiInfo("starter-team02", "<a href=\"/\">home</a>", null, null, null, null, null, Collections.EMPTY_LIST);
     }
 
 }

@@ -1,0 +1,123 @@
+package edu.ucsb.cs156.team02.controllers;
+
+import edu.ucsb.cs156.team02.repositories.UserRepository;
+import edu.ucsb.cs156.team02.testconfig.TestConfig;
+import edu.ucsb.cs156.team02.ControllerTestCase;
+import edu.ucsb.cs156.team02.entities.CollegiateSubreddit;
+import edu.ucsb.cs156.team02.entities.User;
+import edu.ucsb.cs156.team02.repositories.CollegiateSubredditRepository;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MvcResult;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Optional;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@WebMvcTest(controllers = CollegiateSubredditController.class)
+@Import(TestConfig.class)
+public class CollegiateSubredditControllerTests extends ControllerTestCase {
+
+    @MockBean
+    CollegiateSubredditRepository collegiateSubredditRepository;
+
+    @MockBean
+    UserRepository userRepository;
+
+    // Authorization tests for /api/collegiate_subreddits/all
+
+    @Test
+    public void api_collegiate_subreddit_all__logged_out__returns_403() throws Exception {
+        mockMvc.perform(get("/api/collegiate_subreddits/all"))
+                .andExpect(status().is(403));
+    }
+
+    @WithMockUser(roles = { "USER" })
+    @Test
+    public void api_collegiate_subreddit_all__user_logged_in__returns_200() throws Exception {
+        mockMvc.perform(get("/api/collegiate_subreddits/all"))
+                .andExpect(status().isOk());
+    }
+
+    // Authorization tests for /api/collegiate_subreddits/post
+
+    @Test
+    public void api_collegiate_subreddits_post__logged_out__returns_403() throws Exception {
+        mockMvc.perform(post("/api/collegiate_subreddits/post"))
+                .andExpect(status().is(403));
+    }
+
+    // Tests with mocks for database actions
+
+    @WithMockUser(roles = { "USER" })
+    @Test
+    public void api_collegiate_subreddits_all__user_logged_in__returns_only_collegiate_subreddits_for_user() throws Exception {
+
+        // arrange
+
+        User thisUser = currentUserService.getCurrentUser().getUser();
+
+        CollegiateSubreddit collegiateSubreddit1 = CollegiateSubreddit.builder().name("Name 1").location("Location 1").subreddit("Subreddit 1").id(1L).build();
+        CollegiateSubreddit collegiateSubreddit2 = CollegiateSubreddit.builder().name("Name 2").location("Location 2").subreddit("Subreddit 2").id(2L).build();
+
+        ArrayList<CollegiateSubreddit> expectedCollegiateSubreddits = new ArrayList<>();
+        expectedCollegiateSubreddits.addAll(Arrays.asList(collegiateSubreddit1, collegiateSubreddit2));
+        when(collegiateSubredditRepository.findAll()).thenReturn(expectedCollegiateSubreddits);
+
+        // act
+        MvcResult response = mockMvc.perform(get("/api/collegiate_subreddits/all"))
+                .andExpect(status().isOk()).andReturn();
+
+        // assert
+
+        verify(collegiateSubredditRepository, times(1)).findAll();
+        String expectedJson = mapper.writeValueAsString(expectedCollegiateSubreddits);
+        String responseString = response.getResponse().getContentAsString();
+        assertEquals(expectedJson, responseString);
+    }
+
+    @WithMockUser(roles = { "USER" })
+    @Test
+    public void api_collegiate_subreddits_post__user_logged_in() throws Exception {
+        // arrange
+
+        User u = currentUserService.getCurrentUser().getUser();
+
+        CollegiateSubreddit expectedCollegiateSubreddit = CollegiateSubreddit.builder()
+                .name("test name")
+                .location("test location")
+                .subreddit("test sub")
+                .id(0L)
+                .build();
+
+        when(collegiateSubredditRepository.save(eq(expectedCollegiateSubreddit))).thenReturn(expectedCollegiateSubreddit);
+
+        // act
+        MvcResult response = mockMvc.perform(
+                post("/api/collegiate_subreddits/post?name=test name&location=test location&subreddit=test sub")
+                        .with(csrf()))
+                .andExpect(status().isOk()).andReturn();
+
+        // assert
+        verify(collegiateSubredditRepository, times(1)).save(expectedCollegiateSubreddit);
+        String expectedJson = mapper.writeValueAsString(expectedCollegiateSubreddit);
+        String responseString = response.getResponse().getContentAsString();
+        assertEquals(expectedJson, responseString);
+    }
+
+}
