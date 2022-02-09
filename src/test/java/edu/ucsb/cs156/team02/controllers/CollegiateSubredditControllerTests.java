@@ -154,4 +154,17 @@ public class CollegiateSubredditControllerTests extends ControllerTestCase {
         assertEquals("id 123 not found",responseString);
     }
 
+    @WithMockUser(roles = { "ADMIN" })
+    @Test
+    public void api_CollegiateSubreddit__admin_logged_in__search_for_CollegiateSubreddit_that_does_not_exist() throws Exception {
+
+        when(collegiateSubredditRepository.findById(eq(123L))).thenReturn(Optional.empty());
+
+        MvcResult response = mockMvc.perform(get("/api/collegiateSubreddits?id=123")).andExpect(status().isBadRequest()).andReturn();
+
+        verify(collegiateSubredditRepository,times(1)).findById(eq(123L));
+        String responseString = response.getResponse().getContentAsString();
+        assertEquals("id 123 not found",responseString);
+    }
+
 }
