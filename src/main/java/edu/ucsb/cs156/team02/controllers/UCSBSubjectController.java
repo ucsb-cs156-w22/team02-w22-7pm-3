@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.oauth2.sdk.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,19 @@ import java.util.Optional;
 @RestController
 @Slf4j
 public class UCSBSubjectController extends ApiController {
+    
+    // Helper class for dealing with errors with GET, PUT, and DELETE endpoints for a single item
+    public class UCSBSubjectOrError {
+        Long id;
+        UCSBSubject ucsbSubject;
+        ResponseEntity<String> error;
+
+        public UCSBSubjectOrError(Long id) {
+            this.id = id;
+        }
+    }
+    
+    
     @Autowired
     private UCSBSubjectRepository ucsbSubjectRepository;
 
@@ -70,5 +84,41 @@ public class UCSBSubjectController extends ApiController {
         subject.setInactive(inactive);
         UCSBSubject savedSubject = ucsbSubjectRepository.save(subject);
         return savedSubject;
-    } 
+    }
+
+    // Function that implements an endpoint to return JSON of the database record with a specific id
+    // Returns an 400 and error message otherwise
+    @ApiOperation(value = "Get a single UCSBSubject by ID")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("")
+    public ResponseEntity<String> getSubjectByID(@ApiParam("ID") @RequestParam Long id) throws JsonProcessingException {
+
+        loggingService.logMethod();
+        UCSBSubjectOrError soe = new UCSBSubjectOrError(id);
+        
+        soe = doesUCSBSubjectExist(soe);
+        if (soe.error != null) {
+            return soe.error;
+        }
+        String body = mapper.writeValueAsString(soe.ucsbSubject);
+        return ResponseEntity.ok().body(body);
+    }
+
+    // soe.id is item being looked up
+    // If UCSBSubject with id soe.id exists, it is copied to soe.UCSBSubject and toe.error is null
+    // Otherwise, soe.error is the appropriate string to report the error condition that UCSBSubject with id soe.id does not exist
+    
+    public UCSBSubjectOrError doesUCSBSubjectExist(UCSBSubjectOrError soe) {
+
+        Optional<UCSBSubject> optionalUCSBSubject = ucsbSubjectRepository.findById(soe.id);
+
+        if (optionalUCSBSubject.isEmpty()) {
+            soe.error = ResponseEntity
+                    .badRequest()
+                    .body(String.format("id %d not found", soe.id));
+        } else {
+            soe.ucsbSubject = optionalUCSBSubject.get();
+        }
+        return soe;
+    }
 }
