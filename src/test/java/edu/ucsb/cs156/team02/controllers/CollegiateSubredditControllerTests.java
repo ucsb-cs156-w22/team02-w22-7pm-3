@@ -62,8 +62,6 @@ public class CollegiateSubredditControllerTests extends ControllerTestCase {
                 .andExpect(status().is(403));
     }
 
-    // Tests with mocks for database actions
-
     @WithMockUser(roles = { "USER" })
     @Test
     public void api_collegiate_subreddits_all__user_logged_in__returns_only_collegiate_subreddits_for_user() throws Exception {
