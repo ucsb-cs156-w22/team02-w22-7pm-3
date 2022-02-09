@@ -34,8 +34,13 @@ import java.util.Optional;
 public class CollegiateSubredditController extends ApiController{
 
     public class RecordOrError {
+        Long id;
         CollegiateSubreddit record;
         ResponseEntity<String> error;
+
+        public RecordOrError(Long id) {
+            this.id = id;
+        }
     }
 
     @Autowired
@@ -72,15 +77,16 @@ public class CollegiateSubredditController extends ApiController{
         return savedCollegiateSubreddit;
     }
 
-    @ApiOperation(value = "Returns the database record with id 123 if it exists, or a error message if it does not.")
+    @ApiOperation(value = "Get a single record by its ID.")
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("")
-    public ResponseEntity<String> getRecord123() throws JsonProcessingException {
+    public ResponseEntity<String> getRecordById(
+        @ApiParam("id") @RequestParam Long id) throws JsonProcessingException {
         loggingService.logMethod();
 
-        RecordOrError roe = new RecordOrError();
+        RecordOrError roe = new RecordOrError(id);
 
-        roe = doesRecord123Exist(roe);
+        roe = doesRecordExist(roe);
         if (roe.error != null) {
             return roe.error;
         }
@@ -89,13 +95,13 @@ public class CollegiateSubredditController extends ApiController{
         return ResponseEntity.ok().body(body);
     }
 
-    public RecordOrError doesRecord123Exist(RecordOrError roe) {
-        Optional<CollegiateSubreddit> optionalRecord = collegiateSubredditRepository.findById(123L);
+    public RecordOrError doesRecordExist(RecordOrError roe) {
+        Optional<CollegiateSubreddit> optionalRecord = collegiateSubredditRepository.findById(roe.id);
 
         if(optionalRecord.isEmpty()) {
             roe.error = ResponseEntity
             .badRequest()
-            .body(String.format("id 123 not found"));
+            .body(String.format("id %d not found", roe.id));
         }else{
             roe.record = optionalRecord.get();
         }
